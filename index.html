@@ -1,1 +1,756 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Генератор на класни работи - ЧЕГ „Проф. Иван Апостолов“</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- KaTeX for beautiful math formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .code-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .math-expr {
+            font-size: 1.05em;
+            white-space: nowrap !important;
+            display: inline-block;
+        }
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .print-page {
+                background-color: white !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                page-break-after: always !important;
+                break-after: page !important;
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            .task-item {
+                break-inside: avoid !important;
+            }
+            body {
+                background-color: white !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
 
+    <!-- Header / Navigation (Hidden in print) -->
+    <header class="bg-indigo-950 text-white shadow-md no-print py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <svg class="w-8 h-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight">Генератор на Класни Работи</h1>
+                    <p class="text-xs text-indigo-200">Математика — 8. клас, Втори срок</p>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <button onclick="generateAll()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" /></svg>
+                    Генерирай Нови Варианти
+                </button>
+                <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                    Принтирай / PDF
+                </button>
+                <button id="toggleAnswersBtn" onclick="toggleAnswers()" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded-lg shadow transition duration-150">
+                    Покажи Отговорите
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Controls Panel (Hidden in print) -->
+    <aside class="bg-white border-b border-slate-200 py-4 px-6 no-print shadow-sm">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Училище</label>
+                <input type="text" id="schoolName" value="ЧЕГ „Проф. Иван Апостолов“" oninput="updateMetadata()" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-1.5 text-sm font-semibold focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Учебна Година</label>
+                <input type="text" id="schoolYear" value="2025/2026 г." oninput="updateMetadata()" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 uppercase mb-1">Брой Варианти</label>
+                <select id="variantCount" onchange="generateAll()" class="w-full bg-slate-50 border border-slate-200 rounded px-3 py-1.5 text-sm focus:outline-none focus:border-indigo-500">
+                    <option value="2">2 варианта (редуващи се)</option>
+                    <option value="4" selected>4 варианта (редуващи се)</option>
+                    <option value="6">6 варианта (редуващи се)</option>
+                    <option value="8">8 варианта (редуващи се)</option>
+                </select>
+            </div>
+            <div class="flex items-end justify-start gap-4 h-full pb-1">
+                <label class="flex items-center gap-2 text-sm text-slate-700 font-medium cursor-pointer">
+                    <input type="checkbox" id="scrambleData" checked class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4">
+                    Случайни числа при всяко генериране
+                </label>
+            </div>
+        </div>
+        <!-- Secret Decryption Key for Teacher -->
+        <div class="max-w-7xl mx-auto mt-3 p-2 bg-indigo-50 rounded-lg text-xs text-indigo-800 flex items-center gap-2">
+            <svg class="w-4 h-4 text-indigo-600 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            <span><strong>Указание за кодирането:</strong> Номерата на вариантите са записани дискретно в горния десен ъгъл на всяка страница. Код <strong>A</strong> съответства на Вариант 1, а код <strong>B</strong> съответства на Вариант 2. Числото накрая е поредният номер (напр. <code>A1</code> съответства на Вариант 1.1, а <code>B3</code> съответства на Вариант 2.3).</span>
+        </div>
+    </aside>
+
+    <!-- Main Content Grid -->
+    <main class="max-w-5xl mx-auto py-8 px-4">
+        <!-- Rendered Pages Area -->
+        <div id="pagesContainer" class="space-y-8">
+            <!-- Dynamic pages will be inserted here -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-100 border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print mt-12">
+        <p>© 2026 Интерактивен генератор по Математика за ЧЕГ „Проф. Иван Апостолов“.</p>
+    </footer>
+
+    <!-- Script Section -->
+    <script>
+        let showAnswersState = false;
+
+        // Constants and Random Helpers
+        function getRandomInt(min, max) {
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        function getRandomElement(arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
+        }
+
+        function formatCoefficient(coeff, isLeading = false) {
+            if (coeff === 1) return isLeading ? "" : "+";
+            if (coeff === -1) return "-";
+            if (coeff > 0) return isLeading ? `${coeff}` : `+${coeff}`;
+            return `${coeff}`;
+        }
+
+        function formatSign(num) {
+            return num >= 0 ? `+${num}` : `${num}`;
+        }
+
+        // Generator functions for Variant A (Based on Variant 1 structure)
+        function generateVariantAData(index) {
+            // Task 1a: a(x-b)(x+b) = c(x-b) -> Roots: x1 = b, x2 = c/a - b
+            let b = getRandomInt(2, 5);
+            let a = getRandomInt(2, 4);
+            let x2 = getRandomInt(-4, 4);
+            while (x2 === b) { x2 = getRandomInt(-4, 4); }
+            let c = a * (x2 + b);
+            
+            // Task 1b: Biquadratic equation: x^4 - S_b x^2 + P_b = 0
+            let r1 = getRandomInt(2, 4);
+            let r2 = getRandomInt(r1 + 1, 6);
+            let Sb = r1*r1 + r2*r2;
+            let Pb = r1*r1 * r2*r2;
+
+            // Task 1c: (x^2 - dx)^2 - e(x^2 - dx) - f = 0
+            let d = getRandomInt(1, 4);
+            let r_a = getRandomInt(-2, 3);
+            let r_b = d - r_a;
+            let y1 = -r_a * r_b;
+            
+            let r_c = getRandomInt(-3, 2);
+            while(r_c === r_a || r_c === r_b) { r_c = getRandomInt(-3, 2); }
+            let r_d = d - r_c;
+            let y2 = -r_c * r_d;
+            
+            let e = y1 + y2;
+            let f = - y1 * y2;
+
+            // Task 2: Factor Trinomial: M = ax^2 + bx + c
+            let t_a = getRandomElement([-5, -4, -3, -2, 2, 3, 4, 5]);
+            let tx1 = getRandomInt(-3, 3);
+            let tx2 = getRandomInt(-2, 4);
+            while(tx1 === tx2) { tx2 = getRandomInt(-2, 4); }
+            let tb = -t_a * (tx1 + tx2);
+            let tc = t_a * tx1 * tx2;
+
+            // Task 3: Given Equation A x^2 - B x + C = 0
+            let x_1 = getRandomInt(1, 4);
+            let x_2 = getRandomInt(x_1 + 1, 5);
+            let t3_A = getRandomInt(2, 5);
+            let t3_B = t3_A * (x_1 + x_2);
+            let t3_C = t3_A * x_1 * x_2;
+            let k = getRandomInt(1, 3);
+            let p_val = (x_1*x_1 + x_2*x_2) - k*(x_1 + x_2);
+
+            // Task 4: x^2 + px - q_val = 0. One root is r_given.
+            let r_given = getRandomInt(3, 7);
+            let r_other = getRandomInt(-8, -2);
+            let p_coef = -(r_given + r_other);
+            let q_val = - (r_given * r_other);
+
+            // Task 5: Perpendicular chords AB and AC. Distance from O to AB is d1. Find AC.
+            let d1 = getRandomInt(3, 8);
+            let ac_len = 2 * d1;
+
+            // Task 6: Intersecting Secants and Chords
+            let bdc_deg = getRandomInt(20, 35);
+            let aqd_deg = getRandomInt(85, 115);
+            let abd_deg = aqd_deg - bdc_deg;
+            let bmc_deg = aqd_deg - 2 * bdc_deg;
+
+            // Task 7: M, A, B on circle. MA:MB = r_ratio : s_ratio. AMB = amb_deg.
+            let amb_deg = getRandomInt(60, 80);
+            let r_ratio = getRandomInt(1, 3);
+            let s_ratio = r_ratio + getRandomInt(1, 3);
+            let total_arcs = 360 - 2 * amb_deg;
+            let one_part = total_arcs / (r_ratio + s_ratio);
+            while (!Number.isInteger(one_part)) {
+                amb_deg = getRandomInt(60, 80);
+                r_ratio = getRandomInt(1, 3);
+                s_ratio = r_ratio + getRandomInt(1, 3);
+                total_arcs = 360 - 2 * amb_deg;
+                one_part = total_arcs / (r_ratio + s_ratio);
+            }
+            let arc_ma = r_ratio * one_part;
+            let arc_mb = s_ratio * one_part;
+            
+            let mba_deg = arc_ma / 2;
+            let mob_deg = arc_mb;
+            let amq_deg = arc_ma / 2;
+            let bqm_deg = Math.abs(amb_deg - mba_deg);
+
+            return {
+                variantName: `Вариант ${index}.1`,
+                secretCode: `IA-8-II-A${index}`,
+                t1a: { a, b, c, ans: `${b}; ${x2}` },
+                t1b: { Sb, Pb, ans: `\\pm ${r1}; \\pm ${r2}` },
+                t1c: { d, e, f, ans: `${r_a}; ${r_b}; ${r_c}; ${r_d}` },
+                t2: { a: t_a, b: tb, c: tc, ans: `${t_a > 0 ? t_a : ''}(x - ${tx1})(x - ${tx2})`.replace('--', '+').replace('- -', '+') },
+                t3: { A: t3_A, B: t3_B, C: t3_C, k, ans_signs: "двата корена са положителни", ans_p: p_val },
+                t4: { r_given, r_other, p_coef, q_val },
+                t5: { d1, ac_len },
+                t6: { aqd_deg, bdc_deg, abd_deg, bmc_deg },
+                t7: { amb_deg, r_ratio, s_ratio, mba_deg, mob_deg, amq_deg, bqm_deg }
+            };
+        }
+
+        // Generator functions for Variant B (Based on Variant 2 structure)
+        function generateVariantBData(index) {
+            // Task 1a: (x+a)^2 - b(x-c)(x+c) = d
+            let a = getRandomInt(2, 5);
+            let b = 2;
+            let c = getRandomInt(2, 4);
+            let r1 = getRandomInt(1, 4);
+            let r2 = 2*a - r1;
+            let d = a*a + b*c*c + r1*r2;
+
+            // Task 1b: Biquadratic
+            let br1 = getRandomInt(1, 3);
+            let br2 = getRandomInt(br1 + 1, 5);
+            let Sb = br1*br1 + br2*br2;
+            let Pb = br1*br1 * br2*br2;
+
+            // Task 1c: (x^2 - dx)^2 - e(x^2 - dx) = f
+            let d_c = getRandomInt(2, 5);
+            let x_a = getRandomInt(-2, 3);
+            let x_b = d_c - x_a;
+            let y1 = -x_a * x_b;
+            let y2 = getRandomInt(-5, 5);
+            while(y2 === y1) { y2 = getRandomInt(-5, 5); }
+            let e = y1 + y2;
+            let f = -y1 * y2;
+
+            // Task 2: Factor Trinomial
+            let t_a = getRandomInt(2, 5);
+            let tx1 = getRandomInt(-3, 3);
+            let tx2 = getRandomInt(-2, 4);
+            while(tx1 === tx2) { tx2 = getRandomInt(-2, 4); }
+            let tb = -t_a * (tx1 + tx2);
+            let tc = t_a * tx1 * tx2;
+
+            // Task 3: Given Equation -A x^2 + B x + C = 0
+            let x_1 = getRandomInt(-3, -1);
+            let x_2 = getRandomInt(1, 4);
+            let t3_A = getRandomInt(2, 4);
+            let t3_B = t3_A * (x_1 + x_2);
+            let t3_C = -t3_A * x_1 * x_2;
+            let p_val = 4*x_1*x_2 - 3*x_1 - 3*x_2;
+
+            // Task 4: x^2 + 7x + q = 0. One root is r_given.
+            let r_given = getRandomInt(-5, -1);
+            let p_coef = getRandomInt(6, 12);
+            let r_other = -p_coef - r_given;
+            let q_val = r_given * r_other;
+
+            // Task 5: Perpendicular chords MP and MQ. Distance from O to MP is MQ / 2.
+            let mq_len = getRandomInt(3, 10) * 2;
+            let dist = mq_len / 2;
+
+            // Task 6: BOC = central, BQC = chord intersection. Find BAC and AMD
+            let boc_deg = getRandomInt(40, 80);
+            let bqc_deg = getRandomInt(100, 130);
+            let bac_deg = boc_deg / 2;
+            let amd_deg = 180 - bqc_deg;
+
+            // Task 7: AB:BC:CA = a:b:c
+            let r_ab = getRandomInt(2, 4);
+            let r_bc = r_ab + getRandomInt(1, 3);
+            let r_ca = r_ab + r_bc;
+            let sum_parts = r_ab + r_bc + r_ca;
+            let part = 360 / sum_parts;
+            while(!Number.isInteger(part)) {
+                r_ab = getRandomInt(2, 4);
+                r_bc = r_ab + getRandomInt(1, 3);
+                r_ca = r_ab + r_bc;
+                sum_parts = r_ab + r_bc + r_ca;
+                part = 360 / sum_parts;
+            }
+            let arc_ab = r_ab * part;
+            let arc_bc = r_bc * part;
+            let arc_ca = r_ca * part;
+
+            let ans_a = arc_ca / 2;
+            let ans_b = arc_bc / 2;
+            let ans_c = 180;
+            let ans_d = (arc_ab + arc_bc) / 2;
+
+            return {
+                variantName: `Вариант ${index}.2`,
+                secretCode: `IA-8-II-B${index}`,
+                t1a: { a, b, c, d, ans: `${r1}; ${r2}` },
+                t1b: { Sb, Pb, ans: `\\pm ${br1}; \\pm ${br2}` },
+                t1c: { d_c, e, f, ans: `${x_a}; ${x_b}` },
+                t2: { a: t_a, b: tb, c: tc, ans: `${t_a}(x - ${tx1})(x - ${tx2})`.replace('--', '+').replace('- -', '+') },
+                t3: { A: t3_A, B: t3_B, C: t3_C, ans_signs: "двата корена са с различни знаци", ans_p: p_val },
+                t4: { r_given, r_other, p_coef, q_val },
+                t5: { mq_len, dist },
+                t6: { boc_deg, bqc_deg, bac_deg, amd_deg },
+                t7: { r_ab, r_bc, r_ca, ans_a, ans_b, ans_c, ans_d }
+            };
+        }
+
+        let currentVariants = [];
+
+        function generateAll() {
+            const count = parseInt(document.getElementById('variantCount').value);
+            const scramble = document.getElementById('scrambleData').checked;
+            currentVariants = [];
+
+            for (let i = 0; i < count; i++) {
+                let variantNum = Math.floor(i / 2) + 1;
+                let subVariant = (i % 2 === 0) ? 1 : 2;
+                if (scramble) {
+                    if (subVariant === 1) {
+                        currentVariants.push(generateVariantAData(variantNum));
+                    } else {
+                        currentVariants.push(generateVariantBData(variantNum));
+                    }
+                } else {
+                    if (subVariant === 1) {
+                        currentVariants.push(generateVariantAData(variantNum));
+                    } else {
+                        currentVariants.push(generateVariantBData(variantNum));
+                    }
+                }
+            }
+
+            renderPages();
+        }
+
+        function updateMetadata() {
+            const schoolName = document.getElementById('schoolName').value;
+            const schoolYear = document.getElementById('schoolYear').value;
+            
+            document.querySelectorAll('.meta-school').forEach(el => el.textContent = schoolName);
+            document.querySelectorAll('.meta-year').forEach(el => el.textContent = schoolYear);
+        }
+
+        function toggleAnswers() {
+            showAnswersState = !showAnswersState;
+            const btn = document.getElementById('toggleAnswersBtn');
+            if (showAnswersState) {
+                btn.textContent = "Скрий Отговорите";
+                btn.classList.remove('bg-slate-700', 'hover:bg-slate-600');
+                btn.classList.add('bg-amber-600', 'hover:bg-amber-500');
+                document.querySelectorAll('.answer-section').forEach(el => el.classList.remove('hidden'));
+            } else {
+                btn.textContent = "Покажи Отговорите";
+                btn.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+                btn.classList.add('bg-slate-700', 'hover:bg-slate-600');
+                document.querySelectorAll('.answer-section').forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        function renderPages() {
+            const container = document.getElementById('pagesContainer');
+            container.innerHTML = '';
+
+            const schoolName = document.getElementById('schoolName').value;
+            const schoolYear = document.getElementById('schoolYear').value;
+
+            currentVariants.forEach((v, index) => {
+                const isType1 = v.variantName.endsWith('.1');
+                let pageHTML = "";
+
+                if (isType1) {
+                    pageHTML = `
+                    <div class="print-page bg-white border border-slate-300 rounded-xl shadow-lg p-8 relative transition duration-150">
+                        <!-- HEADER SHEET -->
+                        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-6">
+                            <div>
+                                <h2 class="text-md font-bold text-slate-800 meta-school">${schoolName}</h2>
+                                <h3 class="text-xl font-extrabold text-slate-900 tracking-tight">Класна работа №2 — 8. клас</h3>
+                                <p class="text-xs text-slate-500 font-medium">Учебна година: <span class="meta-year">${schoolYear}</span></p>
+                            </div>
+                            <div class="text-right">
+                                <!-- Obfuscated Variant Code -->
+                                <span class="inline-block bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-1.5 border border-slate-200 rounded code-font" title="Таен шифър за учителя">Код: ${v.secretCode}</span>
+                            </div>
+                        </div>
+
+                        <!-- STUDENT METADATA -->
+                        <div class="grid grid-cols-12 gap-4 border border-slate-200 rounded-lg p-3 mb-6 bg-slate-50 text-xs text-slate-600 items-center">
+                            <div class="col-span-5"><strong>Име:</strong> ____________________________________________</div>
+                            <div class="col-span-2"><strong>Клас:</strong> _________</div>
+                            <div class="col-span-3"><strong>Получени точки:</strong> _________ / 40 т.</div>
+                            <div class="col-span-2"><strong>Оценка:</strong> _________</div>
+                        </div>
+
+                        <!-- TASKS LIST -->
+                        <div class="space-y-6">
+                            <!-- Task 1 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-2">1. Да се решат уравненията:</h4>
+                                <div class="flex flex-col gap-3 pl-4">
+                                    <div class="whitespace-nowrap">а) (3 т.) <span class="math-expr">\\(${v.t1a.a}(x-${v.t1a.b})(x+${v.t1a.b}) = ${v.t1a.c}(x-${v.t1a.b})\\)</span></div>
+                                    <div class="whitespace-nowrap">б) (3 т.) <span class="math-expr">\\(x^4 - ${v.t1b.Sb}x^2 + ${v.t1b.Pb} = 0\\)</span></div>
+                                    <div class="whitespace-nowrap">в) (4 т.) <span class="math-expr">\\((x^2 - ${v.t1c.d}x)^2 - ${v.t1c.e}(x^2 - ${v.t1c.d}x) - ${v.t1c.f} = 0\\)</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Task 2 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-2">
+                                    2. (4 т.) Да се разложи многочленът на множители: 
+                                    <span class="math-expr">\\(M = ${v.t2.a}x^2 ${formatSign(v.t2.b)}x ${formatSign(v.t2.c)}\\)</span>
+                                </h4>
+                            </div>
+
+                            <!-- Task 3 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    3. Дадено е уравнението: 
+                                    <span class="math-expr">\\(${v.t3.A}x^2 - ${v.t3.B}x + ${v.t3.C} = 0\\)</span>
+                                </h4>
+                                <div class="pl-4 space-y-1">
+                                    <p>а) (3 т.) Да се покаже, че уравнението има два реални корена и да се определят знаците им.</p>
+                                    <p>б) (5 т.) Ако <span class="math-expr">\\(x_1\\)</span> и <span class="math-expr">\\(x_2\\)</span> са корените на уравнението, да се пресметне: 
+                                       <span class="math-expr">\\(P = x_1(x_1 - ${v.t3.k}) + x_2(x_2 - ${v.t3.k})\\)</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Task 4 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    4. (4 т.) Единият от корените на уравнението <span class="math-expr">\\(x^2 + px - ${v.t4.q_val} = 0\\)</span> е равен на <span class="math-expr">\\(${v.t4.r_given}\\)</span>. 
+                                    Да се намери другият корен на уравнението и коефициентът <span class="math-expr">\\(p\\)</span>.
+                                </h4>
+                            </div>
+
+                            <!-- Task 5 & SVG -->
+                            <div class="task-item grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div class="md:col-span-8">
+                                    <h4 class="font-bold text-slate-900 mb-1">
+                                        5. (4 т.) През точка A от окръжност <span class="math-expr">\\(k(O)\\)</span> са построени две взаимно перпендикулярни хорди AB и AC. 
+                                        Ако разстоянието от O до хордата AB е <span class="math-expr">\\(${v.t5.d1}\\)</span> cm, да се намери дължината на хордата AC.
+                                    </h4>
+                                </div>
+                                <div class="md:col-span-4 flex justify-center">
+                                    <svg width="240" height="240" viewBox="0 0 240 240" class="border border-slate-200 rounded-lg bg-slate-50">
+                                        <circle cx="120" cy="120" r="84.85" fill="none" stroke="#334155" stroke-width="2"/>
+                                        <line x1="60" y1="180" x2="60" y2="60" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="60" y1="180" x2="180" y2="180" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="60" y1="60" x2="180" y2="180" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4" />
+                                        <path d="M 60 170 L 70 170 L 70 180" fill="none" stroke="#475569" stroke-width="1.5" />
+                                        <circle cx="120" cy="120" r="3.5" fill="#ef4444" />
+                                        <text x="128" y="115" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ef4444">O</text>
+                                        <line x1="120" y1="120" x2="60" y2="120" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3" />
+                                        <circle cx="60" cy="120" r="3" fill="#1e293b" />
+                                        <text x="44" y="124" font-family="sans-serif" font-size="12" font-weight="bold" fill="#334155">P</text>
+                                        <path d="M 60 112 L 68 112 L 68 120" fill="none" stroke="#475569" stroke-width="1.2" />
+                                        <circle cx="60" cy="180" r="4" fill="#1e293b" />
+                                        <text x="42" y="196" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">A</text>
+                                        <circle cx="60" cy="60" r="4" fill="#1e293b" />
+                                        <text x="42" y="54" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">B</text>
+                                        <circle cx="180" cy="180" r="4" fill="#1e293b" />
+                                        <text x="190" y="196" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">C</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Task 6 & SVG -->
+                            <div class="task-item grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div class="md:col-span-8">
+                                    <h4 class="font-bold text-slate-900 mb-1">
+                                        6. (4 т.) Дадена е окръжност <span class="math-expr">\\(k\\)</span> с център O. Хордите AC и BD се пресичат в точка Q, а правите AB и CD – в точка M. 
+                                        Ако <span class="math-expr">\\(\\sphericalangle AQD = ${v.t6.aqd_deg}^\\circ\\)</span> и <span class="math-expr">\\(\\sphericalangle BDC = ${v.t6.bdc_deg}^\\circ\\)</span>, да се намерят големините на 
+                                        <span class="math-expr">\\(\\sphericalangle ABD\\)</span> и <span class="math-expr">\\(\\sphericalangle BMC\\)</span>.
+                                    </h4>
+                                </div>
+                                <div class="md:col-span-4 flex justify-center">
+                                    <svg width="240" height="240" viewBox="0 0 250 250" class="border border-slate-200 rounded-lg bg-slate-50">
+                                        <circle cx="150" cy="130" r="90" fill="none" stroke="#334155" stroke-width="2"/>
+                                        <circle cx="150" cy="130" r="3.5" fill="#64748b" />
+                                        <text x="156" y="122" font-family="sans-serif" font-size="14" font-weight="bold" fill="#64748b">O</text>
+                                        <line x1="20" y1="130" x2="225" y2="204.6" stroke="#94a3b8" stroke-width="1.5" />
+                                        <line x1="20" y1="130" x2="225" y2="55.4" stroke="#94a3b8" stroke-width="1.5" />
+                                        <line x1="61.3" y1="145" x2="208.3" y2="61.5" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="208.3" y1="198.5" x2="61.3" y2="115" stroke="#1e293b" stroke-width="2" />
+                                        <circle cx="87.7" cy="130" r="4.5" fill="#ef4444" />
+                                        <text x="83" y="118" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ef4444">Q</text>
+                                        <circle cx="20" cy="130" r="4" fill="#1e293b" />
+                                        <text x="8" y="134" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">M</text>
+                                        <circle cx="61.3" cy="145" r="4" fill="#1e293b" />
+                                        <text x="56" y="158" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">A</text>
+                                        <circle cx="208.3" cy="198.5" r="4" fill="#1e293b" />
+                                        <text x="216" y="206" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">B</text>
+                                        <circle cx="208.3" cy="61.5" r="4" fill="#1e293b" />
+                                        <text x="216" y="58" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">C</text>
+                                        <circle cx="61.3" cy="115" r="4" fill="#1e293b" />
+                                        <text x="56" y="108" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">D</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Task 7 (NO SVG) -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    7. (6 т.) Точките M, A и B лежат на окръжност <span class="math-expr">\\(k\\)</span> с център O. Правата <span class="math-expr">\\(l\\)</span> е допирателна към окръжността в точка M, а правите AB и <span class="math-expr">\\(l\\)</span> се пресичат в точка Q. 
+                                    Ако <span class="math-expr">\\(\\sphericalangle AMB = ${v.t7.amb_deg}^\\circ\\)</span> и мерките на дъгите <span class="math-expr">\\(\\widehat{MA}\\)</span> и <span class="math-expr">\\(\\widehat{MB}\\)</span> се отнасят както <span class="math-expr">\\(${v.t7.r_ratio}:${v.t7.s_ratio}\\)</span>, да се определят мерките на:
+                                </h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pl-4 text-sm mt-2">
+                                    <div>а) <span class="math-expr">\\(\\sphericalangle MBA\\)</span></div>
+                                    <div>б) <span class="math-expr">\\(\\sphericalangle MOB\\)</span></div>
+                                    <div>в) <span class="math-expr">\\(\\sphericalangle AMQ\\)</span></div>
+                                    <div>г) <span class="math-expr">\\(\\sphericalangle BQM\\)</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ANSWERS AREA -->
+                        <div class="answer-section mt-8 pt-6 border-t-2 border-dashed border-indigo-200 bg-amber-50 rounded-lg p-5 text-sm space-y-2 ${showAnswersState ? '' : 'hidden'} no-print-section">
+                            <h5 class="font-bold text-amber-800 text-md flex items-center gap-1.5 mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Справочник с отговори и решения — ${v.variantName} (Код: ${v.secretCode})
+                            </h5>
+                            <p><strong>Зад. 1:</strong> а) <span class="math-expr">\\(x = ${v.t1a.ans}\\)</span>; б) <span class="math-expr">\\(x = ${v.t1b.ans}\\)</span>; в) <span class="math-expr">\\(x \\in \\{ ${v.t1c.ans} \\}\\)</p>
+                            <p><strong>Зад. 2:</strong> Разлагане: <span class="math-expr">\\(${v.t2.ans}\\)</span></p>
+                            <p><strong>Зад. 3:</strong> а) <span class="math-expr">\\(D = ${v.t3.B}^2 - 4 \\cdot ${v.t3.A} \\cdot ${v.t3.C} = ${v.t3.B*v.t3.B - 4*v.t3.A*v.t3.C} > 0\\)</span>, ${v.t3.ans_signs}; б) <span class="math-expr">\\(P = ${v.t3.ans_p}\\)</span></p>
+                            <p><strong>Зад. 4:</strong> Другият корен е <span class="math-expr">\\(x_2 = ${v.t4.r_other}\\)</span>; коефициентът <span class="math-expr">\\(p = ${v.t4.p_coef}\\)</span></p>
+                            <p><strong>Зад. 5:</strong> Дължина <span class="math-expr">\\(AC = 2 \\cdot ${v.t5.d1} = ${v.t5.ac_len}\\)</span> cm</p>
+                            <p><strong>Зад. 6:</strong> <span class="math-expr">\\(\\sphericalangle ABD = ${v.t6.abd_deg}^\\circ\\)</span>, <span class="math-expr">\\(\\sphericalangle BMC = ${v.t6.bmc_deg}^\\circ\\)</span></p>
+                            <p><strong>Зад. 7:</strong> а) <span class="math-expr">\\(${v.t7.mba_deg}^\\circ\\)</span>; б) <span class="math-expr">\\(${v.t7.mob_deg}^\\circ\\)</span>; в) <span class="math-expr">\\(${v.t7.amq_deg}^\\circ\\)</span>; г) <span class="math-expr">\\(${v.t7.bqm_deg}^\\circ\\)</span></p>
+                        </div>
+                    </div>`;
+                } else {
+                    pageHTML = `
+                    <div class="print-page bg-white border border-slate-300 rounded-xl shadow-lg p-8 relative transition duration-150">
+                        <!-- HEADER SHEET -->
+                        <div class="flex justify-between items-start border-b-2 border-slate-900 pb-4 mb-6">
+                            <div>
+                                <h2 class="text-md font-bold text-slate-800 meta-school">${schoolName}</h2>
+                                <h3 class="text-xl font-extrabold text-slate-900 tracking-tight">Класна работа №2 — 8. клас</h3>
+                                <p class="text-xs text-slate-500 font-medium">Учебна година: <span class="meta-year">${schoolYear}</span></p>
+                            </div>
+                            <div class="text-right">
+                                <!-- Obfuscated Variant Code -->
+                                <span class="inline-block bg-slate-100 text-slate-600 text-xs font-semibold px-3 py-1.5 border border-slate-200 rounded code-font" title="Таен шифър за учителя">Код: ${v.secretCode}</span>
+                            </div>
+                        </div>
+
+                        <!-- STUDENT METADATA -->
+                        <div class="grid grid-cols-12 gap-4 border border-slate-200 rounded-lg p-3 mb-6 bg-slate-50 text-xs text-slate-600 items-center">
+                            <div class="col-span-5"><strong>Име:</strong> ____________________________________________</div>
+                            <div class="col-span-2"><strong>Клас:</strong> _________</div>
+                            <div class="col-span-3"><strong>Получени точки:</strong> _________ / 40 т.</div>
+                            <div class="col-span-2"><strong>Оценка:</strong> _________</div>
+                        </div>
+
+                        <!-- TASKS LIST -->
+                        <div class="space-y-6">
+                            <!-- Task 1 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-2">1. Да се решат уравненията:</h4>
+                                <div class="flex flex-col gap-3 pl-4">
+                                    <div class="whitespace-nowrap">а) (3 т.) <span class="math-expr">\\((x + ${v.t1a.a})^2 - ${v.t1a.b}(x - ${v.t1a.c})(x + ${v.t1a.c}) = ${v.t1a.d}\\)</span></div>
+                                    <div class="whitespace-nowrap">б) (3 т.) <span class="math-expr">\\(x^4 - ${v.t1b.Sb}x^2 + ${v.t1b.Pb} = 0\\)</span></div>
+                                    <div class="whitespace-nowrap">в) (4 т.) <span class="math-expr">\\((x^2 - ${v.t1c.d_c}x)^2 - ${v.t1c.e}(x^2 - ${v.t1c.d_c}x) - ${v.t1c.f} = 0\\)</span></div>
+                                </div>
+                            </div>
+
+                            <!-- Task 2 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-2">
+                                    2. (4 т.) Да се разложи многочленът на множители: 
+                                    <span class="math-expr">\\(M = ${v.t2.a}x^2 ${formatSign(v.t2.b)}x ${formatSign(v.t2.c)}\\)</span>
+                                </h4>
+                            </div>
+
+                            <!-- Task 3 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    3. Дадено е уравнението: 
+                                    <span class="math-expr">\\(-${v.t3.A}x^2 + ${v.t3.B}x + ${v.t3.C} = 0\\)</span>
+                                </h4>
+                                <div class="pl-4 space-y-1">
+                                    <p>а) (3 т.) Да се покаже, че уравнението има два реални корена и да се определят знаците им.</p>
+                                    <p>б) (5 т.) Ако <span class="math-expr">\\(x_1\\)</span> и <span class="math-expr">\\(x_2\\)</span> са корените на уравнението, да се пресметне: 
+                                       <span class="math-expr">\\(P = 3x_1(x_2 - 1) + x_2(x_1 - 3)\\)</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <!-- Task 4 -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    4. (4 т.) Единият от корените на уравнението <span class="math-expr">\\(x^2 + ${v.t4.p_coef}x + q = 0\\)</span> е равен на <span class="math-expr">\\(${v.t4.r_given}\\)</span>. 
+                                    Да се намери другият корен на уравнението и коефициентът <span class="math-expr">\\(q\\)</span>.
+                                </h4>
+                            </div>
+
+                            <!-- Task 5 & SVG -->
+                            <div class="task-item grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div class="md:col-span-8">
+                                    <h4 class="font-bold text-slate-900 mb-1">
+                                        5. (4 т.) През точка M от окръжност <span class="math-expr">\\(k(O)\\)</span> са построени две взаимно перпендикулярни хорди MP и MQ. 
+                                        Да се намери разстоянието от точка O до хордата MP, ако дължината на хордата MQ е <span class="math-expr">\\(${v.t5.mq_len}\\)</span> cm.
+                                    </h4>
+                                </div>
+                                <div class="md:col-span-4 flex justify-center">
+                                    <svg width="240" height="240" viewBox="0 0 240 240" class="border border-slate-200 rounded-lg bg-slate-50">
+                                        <circle cx="120" cy="120" r="84.85" fill="none" stroke="#334155" stroke-width="2"/>
+                                        <line x1="60" y1="180" x2="60" y2="60" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="60" y1="180" x2="180" y2="180" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="60" y1="60" x2="180" y2="180" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4" />
+                                        <path d="M 60 170 L 70 170 L 70 180" fill="none" stroke="#475569" stroke-width="1.5" />
+                                        <circle cx="120" cy="120" r="3.5" fill="#ef4444" />
+                                        <text x="128" y="115" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ef4444">O</text>
+                                        <line x1="120" y1="120" x2="60" y2="120" stroke="#ef4444" stroke-width="1.5" stroke-dasharray="3" />
+                                        <circle cx="60" cy="120" r="3" fill="#1e293b" />
+                                        <text x="44" y="124" font-family="sans-serif" font-size="12" font-weight="bold" fill="#334155">H</text>
+                                        <path d="M 60 112 L 68 112 L 68 120" fill="none" stroke="#475569" stroke-width="1.2" />
+                                        <circle cx="60" cy="180" r="4" fill="#1e293b" />
+                                        <text x="42" y="196" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">M</text>
+                                        <circle cx="60" cy="60" r="4" fill="#1e293b" />
+                                        <text x="42" y="54" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">P</text>
+                                        <circle cx="180" cy="180" r="4" fill="#1e293b" />
+                                        <text x="190" y="196" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">Q</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Task 6 & SVG -->
+                            <div class="task-item grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                                <div class="md:col-span-8">
+                                    <h4 class="font-bold text-slate-900 mb-1">
+                                        6. (4 т.) Дадена е окръжност <span class="math-expr">\\(k\\)</span> с център O. Правите AC и BD се пресичат в точка Q, а правите AB и CD – в точка M. 
+                                        Ако <span class="math-expr">\\(\\sphericalangle BOC = ${v.t6.boc_deg}^\\circ\\)</span> и <span class="math-expr">\\(\\sphericalangle BQC = ${v.t6.bqc_deg}^\\circ\\)</span>, да се намерят големините на 
+                                        <span class="math-expr">\\(\\sphericalangle BAC\\)</span> и <span class="math-expr">\\(\\sphericalangle AMD\\)</span>.
+                                    </h4>
+                                </div>
+                                <div class="md:col-span-4 flex justify-center">
+                                    <svg width="240" height="240" viewBox="0 0 250 250" class="border border-slate-200 rounded-lg bg-slate-50">
+                                        <circle cx="150" cy="130" r="90" fill="none" stroke="#334155" stroke-width="2"/>
+                                        <circle cx="150" cy="130" r="3.5" fill="#ef4444" />
+                                        <text x="156" y="122" font-family="sans-serif" font-size="14" font-weight="bold" fill="#ef4444">O</text>
+                                        <line x1="150" y1="130" x2="208.3" y2="198.5" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="3" />
+                                        <line x1="150" y1="130" x2="208.3" y2="61.5" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="3" />
+                                        <line x1="20" y1="130" x2="225" y2="204.6" stroke="#94a3b8" stroke-width="1.5" />
+                                        <line x1="20" y1="130" x2="225" y2="55.4" stroke="#94a3b8" stroke-width="1.5" />
+                                        <line x1="61.3" y1="145" x2="208.3" y2="61.5" stroke="#1e293b" stroke-width="2" />
+                                        <line x1="208.3" y1="198.5" x2="61.3" y2="115" stroke="#1e293b" stroke-width="2" />
+                                        <circle cx="87.7" cy="130" r="4.5" fill="#1e293b" />
+                                        <text x="83" y="118" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">Q</text>
+                                        <circle cx="20" cy="130" r="4" fill="#1e293b" />
+                                        <text x="8" y="134" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">M</text>
+                                        <circle cx="61.3" cy="145" r="4" fill="#1e293b" />
+                                        <text x="56" y="158" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">A</text>
+                                        <circle cx="208.3" cy="198.5" r="4" fill="#1e293b" />
+                                        <text x="216" y="206" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">B</text>
+                                        <circle cx="208.3" cy="61.5" r="4" fill="#1e293b" />
+                                        <text x="216" y="58" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">C</text>
+                                        <circle cx="61.3" cy="115" r="4" fill="#1e293b" />
+                                        <text x="56" y="108" font-family="sans-serif" font-size="14" font-weight="bold" fill="#1e293b">D</text>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <!-- Task 7 (NO SVG) -->
+                            <div class="task-item">
+                                <h4 class="font-bold text-slate-900 mb-1">
+                                    7. (6 т.) Точките A, B и C лежат на окръжност <span class="math-expr">\\(k\\)</span> с център O. Точка M е среда на дъгата <span class="math-expr">\\(\\widehat{AC}\\)</span> (несъдържаща B). 
+                                    Правата <span class="math-expr">\\(l\\)</span> е допирателна към окръжността в точка B и хордите AC и BM се пресичат в точка Q. 
+                                    Ако <span class="math-expr">\\(\\widehat{AB} : \\widehat{BC} : \\widehat{CA} = ${v.t7.r_ab} : ${v.t7.r_bc} : ${v.t7.r_ca}\\)</span>, да се определят мерките на:
+                                </h4>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 pl-4 text-sm mt-2">
+                                    <div>а) <span class="math-expr">\\(\\sphericalangle BAC\\)</span></div>
+                                    <div>б) ъгъла между <span class="math-expr">\\(l\\)</span> и <span class="math-expr">\\(BC\\)</span></div>
+                                    <div>в) <span class="math-expr">\\(\\sphericalangle BOM\\)</span></div>
+                                    <div>г) <span class="math-expr">\\(\\sphericalangle AQM\\)</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ANSWERS AREA -->
+                        <div class="answer-section mt-8 pt-6 border-t-2 border-dashed border-indigo-200 bg-amber-50 rounded-lg p-5 text-sm space-y-2 ${showAnswersState ? '' : 'hidden'} no-print-section">
+                            <h5 class="font-bold text-amber-800 text-md flex items-center gap-1.5 mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                Справочник с отговори и решения — ${v.variantName} (Код: ${v.secretCode})
+                            </h5>
+                            <p><strong>Зад. 1:</strong> а) <span class="math-expr">\\(x \\in \\{ ${v.t1a.ans} \\}\\)</span>; б) <span class="math-expr">\\(x = ${v.t1b.ans}\\)</span>; в) <span class="math-expr">\\(x \\in \\{ ${v.t1c.ans} \\}\\)</p>
+                            <p><strong>Зад. 2:</strong> Разлагане: <span class="math-expr">\\(${v.t2.ans}\\)</span></p>
+                            <p><strong>Зад. 3:</strong> а) <span class="math-expr">\\(D = ${v.t3.B}^2 - 4 \\cdot (-${v.t3.A}) \\cdot ${v.t3.C} = ${v.t3.B*v.t3.B + 4*v.t3.A*v.t3.C} > 0\\)</span>, ${v.t3.ans_signs}; б) <span class="math-expr">\\(P = ${v.t3.ans_p}\\)</span></p>
+                            <p><strong>Зад. 4:</strong> Другият корен е <span class="math-expr">\\(x_2 = ${v.t4.r_other}\\)</span>; коефициентът <span class="math-expr">\\(q = ${v.t4.q_val}\\)</span></p>
+                            <p><strong>Зад. 5:</strong> Разстояние <span class="math-expr">\\(OH = MQ/2 = ${v.t5.dist}\\)</span> cm</p>
+                            <p><strong>Зад. 6:</strong> <span class="math-expr">\\(\\sphericalangle BAC = ${v.t6.bac_deg}^\\circ\\)</span>, <span class="math-expr">\\(\\sphericalangle AMD = ${v.t6.amd_deg}^\\circ\\)</span></p>
+                            <p><strong>Зад. 7:</strong> а) <span class="math-expr">\\(${v.t7.ans_a}^\\circ\\)</span>; б) <span class="math-expr">\\(${v.t7.ans_b}^\\circ\\)</span>; в) <span class="math-expr">\\(${v.t7.ans_c}^\\circ\\)</span>; г) <span class="math-expr">\\(${v.t7.ans_d}^\\circ\\)</span></p>
+                        </div>
+                    </div>`;
+                }
+
+                container.insertAdjacentHTML('beforeend', pageHTML);
+            });
+
+            // Trigger MathJax / KaTeX rendering on the page
+            renderMathInElement(container, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '\\(', right: '\\)', display: false},
+                    {left: '$', right: '$', display: false}
+                ],
+                throwOnError : false
+            });
+        }
+
+        // Initialize App
+        window.onload = function() {
+            generateAll();
+        };
+    </script>
+</body>
+</html>
