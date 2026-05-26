@@ -205,10 +205,11 @@
             let ac_len = 2 * d1;
 
             // Task 6: Intersecting Secants and Chords
-            let aqd_deg = getRandomInt(85, 95);
-            let bdc_deg = getRandomInt(60, 70);
-            let abd_deg = aqd_deg - bdc_deg;
-            let bmc_deg = bdc_deg - abd_deg;
+            // Modified: We give BMC and BDC, ask for ABD and AQD
+            let bmc_deg = getRandomInt(30, 45); // e.g. 35
+            let abd_deg = getRandomInt(20, 30); // e.g. 25
+            let bdc_deg = bmc_deg + abd_deg;    // e.g. 60
+            let aqd_deg = abd_deg + bdc_deg;    // e.g. 85
 
             // Task 7: M, A, B on circle. MA:MB = r_ratio : s_ratio. AMB = amb_deg.
             let combos = [
@@ -246,7 +247,7 @@
                 t3: { A: t3_A, B: t3_B, C: t3_C, k, ans_signs: "двата корена са положителни", ans_p: p_val },
                 t4: { r_given, r_other, p_coef, q_val },
                 t5: { d1, ac_len },
-                t6: { aqd_deg, bdc_deg, abd_deg, bmc_deg },
+                t6: { bmc_deg, bdc_deg, abd_deg, aqd_deg },
                 t7: { amb_deg, r_ratio, s_ratio, mba_deg, mob_deg, amq_deg, bqm_deg }
             };
         }
@@ -577,13 +578,13 @@
                                 </div>
                             </div>
 
-                            <!-- Task 6 & SVG -->
+                            <!-- Task 6 MODIFIED AS REQUESTED -->
                             <div class="task-item grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                 <div class="md:col-span-8">
                                     <h4 class="font-bold text-slate-900 mb-1">
                                         6. (4 т.) Дадена е окръжност <span class="math-expr">\\(k\\)</span> с център O. Хордите AC и BD се пресичат в точка Q, а правите AB и CD – в точка M. 
-                                        Ако <span class="math-expr">\\(\\sphericalangle AQD = ${v.t6.aqd_deg}^\\circ\\)</span> и <span class="math-expr">\\(\\sphericalangle BDC = ${v.t6.bdc_deg}^\\circ\\)</span>, да се намерят големините на 
-                                        <span class="math-expr">\\(\\sphericalangle ABD\\)</span> и <span class="math-expr">\\(\\sphericalangle BMC\\)</span>.
+                                        Ако <span class="math-expr">\\(\\sphericalangle BMC = ${v.t6.bmc_deg}^\\circ\\)</span> и <span class="math-expr">\\(\\sphericalangle BDC = ${v.t6.bdc_deg}^\\circ\\)</span>, да се намерят големините на 
+                                        <span class="math-expr">\\(\\sphericalangle ABD\\)</span> и <span class="math-expr">\\(\\sphericalangle AQD\\)</span>.
                                     </h4>
                                 </div>
                                 <div class="md:col-span-4 flex justify-center">
@@ -617,7 +618,7 @@
                             <p><strong>Зад. 3:</strong> а) <span class="math-expr">\\(D = (${v.t3.B})^2 - 4 \\cdot ${v.t3.A} \\cdot ${v.t3.C} = ${v.t3.B*v.t3.B - 4*v.t3.A*v.t3.C} > 0\\)</span>, ${v.t3.ans_signs}; б) <span class="math-expr">\\(P = ${v.t3.ans_p}\\)</span></p>
                             <p><strong>Зад. 4:</strong> Другият корен е <span class="math-expr">\\(x_2 = ${v.t4.r_other}\\)</span>; коефициентът <span class="math-expr">\\(p = ${v.t4.p_coef}\\)</span></p>
                             <p><strong>Зад. 5:</strong> Дължина <span class="math-expr">\\(AC = 2 \\cdot ${v.t5.d1} = ${v.t5.ac_len}\\)</span> cm</p>
-                            <p><strong>Зад. 6:</strong> <span class="math-expr">\\(\\sphericalangle ABD = ${v.t6.abd_deg}^\\circ\\)</span>, <span class="math-expr">\\(\\sphericalangle BMC = ${v.t6.bmc_deg}^\\circ\\)</span></p>
+                            <p><strong>Зад. 6:</strong> <span class="math-expr">\\(\\sphericalangle ABD = ${v.t6.abd_deg}^\\circ\\)</span>, <span class="math-expr">\\(\\sphericalangle AQD = ${v.t6.aqd_deg}^\\circ\\)</span></p>
                             <p><strong>Зад. 7:</strong> а) <span class="math-expr">\\(${v.t7.mba_deg}^\\circ\\)</span>; б) <span class="math-expr">\\(${v.t7.mob_deg}^\\circ\\)</span>; в) <span class="math-expr">\\(${v.t7.amq_deg}^\\circ\\)</span>; г) <span class="math-expr">\\(${v.t7.bqm_deg}^\\circ\\)</span></p>
                         </div>
                     </div>`;
